@@ -8,6 +8,8 @@ const { checkSchema, validationResult } = require('express-validator');
 
 const recipeSchema = require('./recipeSchema');
 
+const PORT = process.env.PORT || 5000;
+
 const dirname = path.dirname(process.mainModule.filename);
 
 const recipesFilename = path.join(dirname, 'data/recipes.json');
@@ -109,4 +111,4 @@ app
     );
     res.send(readRecipesFormFile());
   })
-  .listen(8000);
+  .listen(PORT, () => console.log(`Listening on ${PORT}`));
