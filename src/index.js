@@ -1,30 +1,30 @@
-const fs = require("fs");
-const path = require("path");
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const { v4 } = require("uuid");
-const { checkSchema, validationResult } = require("express-validator");
+const fs = require('fs');
+const path = require('path');
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const { v4 } = require('uuid');
+const { checkSchema, validationResult } = require('express-validator');
 
-const recipeSchema = require("./recipeSchema");
+const recipeSchema = require('./recipeSchema');
 
 const dirname = path.dirname(process.mainModule.filename);
 
-const recipesFilename = path.join(dirname, "data/recipes.json");
-const defaultRecipesFilename = path.join(dirname, "data/defaultRecipes.json");
-const categoriesFilename = path.join(dirname, "data/categories.json");
+const recipesFilename = path.join(dirname, 'data/recipes.json');
+const defaultRecipesFilename = path.join(dirname, 'data/defaultRecipes.json');
+const categoriesFilename = path.join(dirname, 'data/categories.json');
 
 const defaultCategories = [
-  "Italian cuisine",
-  "Lazagna",
-  "Meat",
-  "Soup",
-  "French",
-  "Cheese dishes"
+  'Italian cuisine',
+  'Lazagna',
+  'Meat',
+  'Soup',
+  'French',
+  'Cheese dishes',
 ];
 
 const readCategoriesFormFile = () => {
-  return JSON.parse(fs.readFileSync(categoriesFilename, { encoding: "utf-8" }));
+  return JSON.parse(fs.readFileSync(categoriesFilename, { encoding: 'utf-8' }));
 };
 
 const writeCategoriesToFile = (categories) => {
@@ -32,7 +32,7 @@ const writeCategoriesToFile = (categories) => {
 };
 
 const readRecipesFormFile = () => {
-  return JSON.parse(fs.readFileSync(recipesFilename, { encoding: "utf-8" }));
+  return JSON.parse(fs.readFileSync(recipesFilename, { encoding: 'utf-8' }));
 };
 
 const writeRecipesToFile = (recipes) => {
@@ -42,13 +42,13 @@ const writeRecipesToFile = (recipes) => {
 const app = express();
 
 app.use(bodyParser.json());
-app.use(cors({ origin: true }));
+app.use(cors());
 
 app
-  .get("/categories", (_req, res) => {
+  .get('/categories', (_req, res) => {
     res.send(readCategoriesFormFile());
   })
-  .get("/recipes", (req, res) => {
+  .get('/recipes', (req, res) => {
     const { filter, search } = req.query;
     const recipes = readRecipesFormFile();
 
@@ -75,21 +75,21 @@ app
       })
     );
   })
-  .get("/recipe/:id", (req, res) => {
+  .get('/recipe/:id', (req, res) => {
     res.send(
       readRecipesFormFile(req.params.id).find(({ id }) => id === req.params.id)
     );
   })
-  .post("/reset", (_req, res) => {
+  .post('/reset', (_req, res) => {
     const defaultRecipes = JSON.parse(
-      fs.readFileSync(defaultRecipesFilename, { encoding: "utf-8" })
+      fs.readFileSync(defaultRecipesFilename, { encoding: 'utf-8' })
     );
 
     writeRecipesToFile(defaultRecipes);
     writeCategoriesToFile(defaultCategories);
     res.send(readRecipesFormFile());
   })
-  .post("/recipe", checkSchema(recipeSchema), (req, res) => {
+  .post('/recipe', checkSchema(recipeSchema), (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
